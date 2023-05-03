@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+int instanceConf = 0;
+int verified = 0;
+chan confCreate, createInstance, userConf, verifyUser, sendInfo, instConf;
+</declaration>
+	<template>
+		<name>VirtSoft</name>
+		<parameter>int size, chan &amp;sendInfo, chan &amp;instConf</parameter>
+		<declaration>int instNum = 0;</declaration>
+		<location id="id0" x="-25" y="-8">
+		</location>
+		<location id="id1" x="110" y="-8">
+		</location>
+		<location id="id2" x="110" y="110">
+		</location>
+		<location id="id3" x="-25" y="110">
+			<name x="-67" y="127">listen</name>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id3"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="8" y="-34">instConf!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="guard" x="127" y="34">instNum&lt;size</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="8" y="93">sendInfo?</label>
+			<label kind="assignment" x="8" y="110">instNum++</label>
+		</transition>
+	</template>
+	<template>
+		<name>Server</name>
+		<parameter>int &amp;verified, int &amp;instanceConf, chan &amp;confCreate, chan&amp; createInstance, chan &amp;userConf, chan &amp;verifyUser, chan &amp;sendInfo, chan &amp;instConf</parameter>
+		<declaration>int instNum = 0;
+</declaration>
+		<location id="id4" x="8" y="0">
+			<name x="-2" y="-34">live_state</name>
+		</location>
+		<location id="id5" x="-153" y="0">
+		</location>
+		<location id="id6" x="-153" y="-170">
+		</location>
+		<location id="id7" x="8" y="-178">
+		</location>
+		<location id="id8" x="161" y="-178">
+		</location>
+		<location id="id9" x="161" y="0">
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id4"/>
+			<label kind="guard" x="34" y="-34">instNum&lt;25</label>
+			<label kind="synchronisation" x="26" y="-17">instConf?</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="161" y="-106">sendInfo!</label>
+			<label kind="assignment" x="161" y="-89">instNum++</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="26" y="-195">userConf!</label>
+			<label kind="assignment" x="26" y="-178">verified:=1</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="8" y="-106">verifyUser?</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id4"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-153" y="-102">confCreate!</label>
+			<label kind="assignment" x="-153" y="-85">instanceConf:=1</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-135" y="-17">createInstance?</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Client</name>
+		<parameter>int &amp;verified, int&amp; instanceConf, chan &amp;confCreate, chan &amp;createInstance, chan &amp;userConf, chan &amp;verifyUser, int instID</parameter>
+		<declaration>int y = -1;
+int instInfo = 0;
+int userInfo = 0;
+clock awaitRes;
+// Place local declarations here.</declaration>
+		<location id="id10" x="-34" y="136">
+			<name x="-44" y="102">loginScreen</name>
+		</location>
+		<location id="id11" x="119" y="-8">
+			<name x="109" y="-42">verify</name>
+		</location>
+		<location id="id12" x="-17" y="0">
+			<name x="-27" y="-34">errorMsg</name>
+		</location>
+		<location id="id13" x="119" y="136">
+			<name x="51" y="136">loading</name>
+			<label kind="invariant" x="109" y="153">awaitRes&lt;=60</label>
+		</location>
+		<location id="id14" x="280" y="0">
+			<name x="270" y="-34">choice</name>
+		</location>
+		<location id="id15" x="280" y="59">
+			<name x="270" y="25">submitNew</name>
+		</location>
+		<location id="id16" x="280" y="119">
+			<name x="270" y="85">infoScr</name>
+		</location>
+		<location id="id17" x="323" y="212">
+			<name x="323" y="178">loading2</name>
+		</location>
+		<location id="id18" x="195" y="212">
+			<name x="185" y="178">successScr</name>
+		</location>
+		<init ref="id10"/>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id14"/>
+			<nail x="195" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="213" y="195">confCreate?</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="314" y="136">createInstance!</label>
+			<label kind="assignment" x="323" y="153">instInfo:=instID</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id14"/>
+			<label kind="guard" x="178" y="-34">y==1</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id10"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="51" y="-34">y==0</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id11"/>
+			<label kind="guard" x="8" y="68">awaitRes&gt;=60</label>
+			<label kind="assignment" x="42" y="51">y:=0</label>
+			<nail x="68" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="119" y="47">userConf?</label>
+			<label kind="assignment" x="119" y="64">y:=verified</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-16" y="119">verifyUser!</label>
+			<label kind="assignment" x="-51" y="170">userInfo:=instID,
+awaitRes:=0</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Server1 = Server(verified, instanceConf, confCreate, createInstance, userConf, verifyUser, sendInfo, instConf);
+VirtSoft1 = VirtSoft(100, sendInfo, instConf);
+Client1 = Client(verified, instanceConf, confCreate, createInstance, userConf, verifyUser, 3);
+Client2 = Client(verified, instanceConf, confCreate, createInstance, userConf, verifyUser, 4);
+// List one or more processes to be composed into a system.
+system Server1, Client1,Client2, VirtSoft1;
+    </system>
+	<queries>
+		<query>
+			<formula>E[]Server1.live_state</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>(Client1.loading &amp;&amp; Client1.awaitRes&gt;60) --&gt; (Client1.y == 0)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>(Client1.choice) --&gt; (Client1.y==1)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[](Server1.instNum&lt;=25)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[](VirtSoft1.instNum &lt;= 25)</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
